@@ -27,7 +27,9 @@ public:
 	T& begin();
 	T& end();
 	T& operator[](int idx);
-	void operator=(const T &t);
+	
+
+	myList<T>& operator=(myList<T> &_list);
 
 	double nodeCreationTime(int idx); //return node cration time
 
@@ -70,6 +72,8 @@ myList<T>::~myList()
 			delete tempPtr;
 		}
 	}
+	first = NULL;
+	last = NULL;
 }
 
 template <typename T>
@@ -154,6 +158,7 @@ void myList<T>::pop_back()
 		delete first;
 		first = NULL;
 		last = NULL;
+		_size--;
 	}
 
 	else if (!empty()) // List is not empty
@@ -282,21 +287,20 @@ double myList<T>::nodeCreationTime(int idx)
 	return currentPtr->getCreationTime();
 }
 
+////class_name & class_name :: operator= ( const class_name & )
+
 template <typename T>
-void myList<T>::operator=(const T &t) {
+myList<T>& myList<T>::operator=(myList<T> &_list) {
 
-	cout << "yolololololololololo" << endl;
-
-	for (int i = 0; i < size(); i++)
+	while (!empty()) // List is not empty
 		pop_back();
-
-	cout << "poppingback" << endl;
 
 	myNode<T> *currentPtr = _list.first;
 
-	for (int i = 0; i < t.size(); i++)
+	for (int i = 0; i < _list.size(); i++)
 	{
 		push_back(currentPtr->data);
 		currentPtr = currentPtr->next;
 	}
+	return *this;
 }

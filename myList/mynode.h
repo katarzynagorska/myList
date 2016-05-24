@@ -5,7 +5,7 @@
 #pragma once
 template <typename T> class myList;
 
-//Wêze³ listy
+//List node class
 template <typename T> class myNode {
 
 	friend class myList<T>;
@@ -13,13 +13,13 @@ template <typename T> class myNode {
 public:
 	myNode(T);
 	myNode();
-	T getData() { return data; }
+	///Returns node age in milliseconds
 	double getCreationTime();
 
 private:
-	T data;
-	myNode* next;
-	clock_t creation;
+	T data;				//<Data stored in nodes
+	myNode* next;		//<Pointer to next node
+	clock_t creation;	//<Node age in ticks
 };
 
 template <typename T>
@@ -38,6 +38,6 @@ myNode<T>::myNode() {
 
 template <typename T>
 double myNode<T>::getCreationTime() {
-	double t;
-	return t = (double)(creation) / (double)(CLOCKS_PER_SEC) * 1000;
+	
+	return ((double)(creation) / (double)(CLOCKS_PER_SEC) * 1000);
 }
