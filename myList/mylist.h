@@ -9,6 +9,7 @@ template <typename T> class myNode;
 template <typename T> class myList {
 public:
 	myList();
+	myList(myList<T> &_list);
 	~myList();
 
 	void push_back(T data);
@@ -26,6 +27,7 @@ public:
 	T& begin();
 	T& end();
 	T& operator[](int idx);
+	void operator=(const T &t);
 
 	double nodeCreationTime(int idx); //return node cration time
 
@@ -40,6 +42,17 @@ myList<T>::myList()
 	last = NULL;
 	first = NULL;
 	_size = 0;
+}
+template <typename T>
+myList<T>::myList(myList<T> &_list) 
+{
+	myNode<T> *currentPtr = _list.first;
+	
+	for (int i = 0; i < _list.size(); i++)
+	{
+		push_back(currentPtr->data);
+		currentPtr = currentPtr->next;
+	}
 }
 
 template<typename T>
@@ -69,7 +82,11 @@ void myList<T>::print()
 		cout << itr++ << ". " << currentPtr->data << endl;
 		currentPtr = currentPtr->next;
 	}
-	cout << endl << endl << "last emlement: " << last->data << endl << "list size: " << size() << endl << endl;
+	if (empty())
+		cout << "empty" << endl << endl;
+	else
+	cout << endl << endl << "first element: " << first->data << endl <<"last emlement: " << last->data << endl << "list size: " << size() << endl << endl;
+
 }
 
 template <typename T>
@@ -97,26 +114,49 @@ void myList<T>::push_back(T data)
 
 template <typename T>
 void myList<T>::push_front(T data) {
-	myNode<T> *newNode = new myNode<T>(data);
-	newNode->next = first;
-	first = newNode;
+	myNode<T> *newPtr = new myNode<T>(data);
+	if (empty())	//Jeœli pusta to ostatni element 
+	{
+		last = newPtr;
+		first = newPtr;
+	}
+	else //Jeœli istnieje wstawiamy przed pierwszym
+	{
+		newPtr->next = first;
+		first = newPtr;
+	}
 	_size++;
 }
 
 template <typename T>
 void myList<T>::pop_front() {
-	if (!empty()) {
+	if (_size == 1)
+	{
+		delete first;
+		first = NULL;
+		last = NULL;
+	}
+
+	else if (!empty()) {
 		myNode<T> *tmpPtr = first;
 		first = first->next;
 		delete tmpPtr;
 		_size--;
 	}
+
 }
 
 template <typename T>
 void myList<T>::pop_back()
 {
-	if (!empty()) // List is not empty
+	if (_size == 1)
+	{
+		delete first;
+		first = NULL;
+		last = NULL;
+	}
+
+	else if (!empty()) // List is not empty
 	{
 		myNode<T> *currentPtr = first;
 		while (currentPtr->next->next)
@@ -140,16 +180,15 @@ void myList<T>::insert(int idx, T data)
 	{
 		//throw (std::out_of_range)
 		cout << "out of range" << endl;
+		return;
 	}
 	else if (idx == _size)
 	{
 		push_back(data);
-		_size++;
 	}
 	else if (idx == 0)
 	{
 		push_front(data);
-		_size++;
 	}
 	else
 	{
@@ -241,4 +280,23 @@ double myList<T>::nodeCreationTime(int idx)
 		currentPtr = currentPtr->next;
 	}
 	return currentPtr->getCreationTime();
+}
+
+template <typename T>
+void myList<T>::operator=(const T &t) {
+
+	cout << "yolololololololololo" << endl;
+
+	for (int i = 0; i < size(); i++)
+		pop_back();
+
+	cout << "poppingback" << endl;
+
+	myNode<T> *currentPtr = _list.first;
+
+	for (int i = 0; i < t.size(); i++)
+	{
+		push_back(currentPtr->data);
+		currentPtr = currentPtr->next;
+	}
 }
