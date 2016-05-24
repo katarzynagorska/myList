@@ -12,44 +12,42 @@ public:
 	myList(myList<T> &_list);
 	~myList();
 
-	void push_back(T data);
-	void push_front(T data);
+	//Elements edition
+	void push_back(const T& data);
+	void push_front(const T& data);
 	void pop_back();
 	void pop_front();
-	void insert(int idx, T data);
+	void insert(int idx, const T& data);
 	void erase(int idx);
 
 	void print();
-
-	bool empty();
-	int size() { return _size; };
-
-	T& begin();
-	T& end();
-	T& operator[](int idx);
 	
+	int size() { return _size; };	//Returns the number of elements in the list container.
+	bool empty();
 
+
+	T& operator[](int idx);
+
+	//Assignement operator, creates copy of the list
 	myList<T>& operator=(myList<T> &_list);
-
-	double nodeCreationTime(int idx); //return node cration time
+	double nodeCreationTime(int idx);
 
 private:
-	myNode<T> *last, *first;
-	int _size;
+	myNode<T> *last, *first;			//<pointers to first and last element
+	int _size;							//<list size
 };
 
-template <typename T>
-myList<T>::myList()
-{
+//Constructs an empty container, with no elements.
+template <typename T> myList<T>::myList() {
 	last = NULL;
 	first = NULL;
 	_size = 0;
 }
-template <typename T>
-myList<T>::myList(myList<T> &_list) 
-{
+
+//Constructs new container, copying contents and modyfying its size.
+template <typename T>myList<T>::myList(myList<T> &_list) {
 	myNode<T> *currentPtr = _list.first;
-	
+
 	for (int i = 0; i < _list.size(); i++)
 	{
 		push_back(currentPtr->data);
@@ -57,16 +55,12 @@ myList<T>::myList(myList<T> &_list)
 	}
 }
 
-template<typename T>
-myList<T>::~myList()
-{
-	if (!empty()) // List is not empty
-	{
+template<typename T> myList<T>::~myList() {
+	if (!empty()) {
 		myNode<T> *currentPtr = first;
 		myNode<T> *tempPtr;
 
-		while (currentPtr != 0) // delete remaining nodes
-		{
+		while (currentPtr != 0) {
 			tempPtr = currentPtr;
 			currentPtr = currentPtr->next;
 			delete tempPtr;
@@ -76,9 +70,12 @@ myList<T>::~myList()
 	last = NULL;
 }
 
-template <typename T>
-void myList<T>::print() 
-{
+//Printing list to console
+template <typename T> void myList<T>::print() {
+	if (empty()) {
+		cout << "empty" << endl << endl;
+		return;
+	}
 	int itr = 0;
 	myNode<T> *currentPtr = first;
 	while (currentPtr)
@@ -86,61 +83,53 @@ void myList<T>::print()
 		cout << itr++ << ". " << currentPtr->data << endl;
 		currentPtr = currentPtr->next;
 	}
-	if (empty())
-		cout << "empty" << endl << endl;
-	else
-	cout << endl << endl << "first element: " << first->data << endl <<"last emlement: " << last->data << endl << "list size: " << size() << endl << endl;
-
+	cout << endl << endl << "first element: " << first->data << endl << "last emlement: " << last->data << endl << "list size: " << size() << endl << endl;
 }
 
-template <typename T>
-bool myList<T>::empty()
-{
+//Returns true if list is empty
+template <typename T> bool myList<T>::empty() {
 	return ((last == NULL) && (first == NULL));
 }
 
-template <typename T>
-void myList<T>::push_back(T data)
-{
+//Adds a new element at the end of the list, after its current last element.
+template <typename T> void myList<T>::push_back(const T& data) {
+
 	myNode<T> *newPtr = new myNode<T>(data);
-	if (empty())	//Jeœli pusta to ostatni element 
-	{
+
+	if (empty()) {
 		last = newPtr;
 		first = newPtr;
 	}
-	else //Jeœli istnieje wstawiamy za ostatnim
-	{
+	else {
 		last->next = newPtr;
 		last = newPtr;
 	}
 	_size++;
 }
 
-template <typename T>
-void myList<T>::push_front(T data) {
+//Inserts a new element at the beginning of the list, right before its current first element
+template <typename T> void myList<T>::push_front(const T& data) {
+
 	myNode<T> *newPtr = new myNode<T>(data);
-	if (empty())	//Jeœli pusta to ostatni element 
-	{
+
+	if (empty()) {
 		last = newPtr;
 		first = newPtr;
 	}
-	else //Jeœli istnieje wstawiamy przed pierwszym
-	{
+	else {
 		newPtr->next = first;
 		first = newPtr;
 	}
 	_size++;
 }
-
-template <typename T>
-void myList<T>::pop_front() {
-	if (_size == 1)
-	{
+//Removes the first element in the list container, effectively reducing its size by one.
+template <typename T> void myList<T>::pop_front() {
+	if (_size == 1) {
 		delete first;
 		first = NULL;
 		last = NULL;
+		_size--;
 	}
-
 	else if (!empty()) {
 		myNode<T> *tmpPtr = first;
 		first = first->next;
@@ -149,54 +138,40 @@ void myList<T>::pop_front() {
 	}
 
 }
-
-template <typename T>
-void myList<T>::pop_back()
-{
-	if (_size == 1)
-	{
+//Removes the last element in the list container, effectively reducing its size by one.
+template <typename T> void myList<T>::pop_back() {
+	if (_size == 1) {
 		delete first;
 		first = NULL;
 		last = NULL;
 		_size--;
 	}
-
-	else if (!empty()) // List is not empty
-	{
+	else if (!empty()) {
 		myNode<T> *currentPtr = first;
+
 		while (currentPtr->next->next)
-		{
 			currentPtr = currentPtr->next;
-		}	
-		
+
 		delete currentPtr->next;
 		last = currentPtr;
 		last->next = NULL;
-
 		_size--;
-
 	}
 }
-
-template <typename T>
-void myList<T>::insert(int idx, T data)
-{
-	if ((idx > _size)|| (idx < 0))
-	{
-		//throw (std::out_of_range)
+//The container is extended by inserting new elements before the element at the specified position.
+template <typename T>  void myList<T>::insert(int idx, const T& data) {
+	if ((idx > _size) || (idx < 0)) {
+		//throw out_of_range("index out of range");
 		cout << "out of range" << endl;
 		return;
 	}
-	else if (idx == _size)
-	{
+	else if (idx == _size) {
 		push_back(data);
 	}
-	else if (idx == 0)
-	{
+	else if (idx == 0) {
 		push_front(data);
 	}
-	else
-	{
+	else {
 		myNode<T> *currentPtr = first;
 		myNode<T> *tmp;
 		myNode<T> *newNode = new myNode<T>(data);
@@ -210,30 +185,24 @@ void myList<T>::insert(int idx, T data)
 		_size++;
 	}
 }
-
-template <typename T>
-void myList<T>::erase(int idx) {
-	if (idx > _size-1)
-	{
-		//throw (std::out_of_range)
+//Removes from the list container either a single element at the specified position
+//This effectively reduces the container size by the number of elements removed, which are destroyed.
+template <typename T> void myList<T>::erase(int idx) {
+	if ((idx > _size - 1) || (idx < 0)) {
+		//throw out_of_range("index out of range");
 		cout << "out of range" << endl;
 	}
-	else if (idx == _size - 1)
-	{
+	else if (idx == _size - 1) {
 		pop_back();
 	}
-	else if (idx == 0)
-	{
+	else if (idx == 0) {
 		pop_front();
 	}
-	else
-	{
+	else {
 		myNode<T> *toErase;
 		myNode<T> *currentPtr = first;
 		for (int i = 0; i < idx - 1; i++)
-		{
 			currentPtr = currentPtr->next;
-		}
 
 		toErase = currentPtr->next;
 		currentPtr->next = currentPtr->next->next;
@@ -241,64 +210,44 @@ void myList<T>::erase(int idx) {
 		delete toErase;
 
 		_size--;
-
 	}
 }
+//Returns a reference to the element at position idx in the list container.
+template <typename T> T& myList<T>::operator[](int idx) {
 
-template <typename T>
-T& myList<T>::operator[](int idx) {
-
-	if ((idx > size() - 1) || (idx < 0))
-	{
-		throw out_of_range("index out of range");
+	if ((idx > size() - 1) || (idx < 0)) {
+		//throw out_of_range("index out of range");
 		return last->next->data;
 	}
-	else
-	{
-
+	else {
 		myNode<T> *currentPtr = first;
+		
 		for (int i = 0; i < idx; i++)
-		{
 			currentPtr = currentPtr->next;
-		}
+
 		return currentPtr->data;
 	}
 }
-template <typename T>
-T& myList<T>::begin()
-{
-	return first->data;
-}
+//Returns node at index idx age; Returns -1 if idx out of range.
+template <typename T> double myList<T>::nodeCreationTime(int idx) {
+	if ((idx > size() - 1) || (idx < 0))
+		return -1;
 
-template <typename T>
-T& myList<T>::end()
-{
-	return last->data;
-}
-
-template <typename T>
-double myList<T>::nodeCreationTime(int idx)
-{
 	myNode<T> *currentPtr = first;
-	for (int i = 0; i < idx; i++)
-	{
+	for (int i = 0; i < idx; i++) {
 		currentPtr = currentPtr->next;
 	}
 	return currentPtr->getCreationTime();
 }
+//Assigns new contents to the container, replacing its current contents, and modifying its size accordingly.
+template <typename T> myList<T>& myList<T>::operator=(myList<T> &_list) {
 
-////class_name & class_name :: operator= ( const class_name & )
-
-template <typename T>
-myList<T>& myList<T>::operator=(myList<T> &_list) {
-
-	while (!empty()) // List is not empty
+	while (!empty())
 		pop_back();
 
 	myNode<T> *currentPtr = _list.first;
 
-	for (int i = 0; i < _list.size(); i++)
-	{
+	for (int i = 0; i < _list.size(); i++) {
 		push_back(currentPtr->data);
 		currentPtr = currentPtr->next;
 	}
